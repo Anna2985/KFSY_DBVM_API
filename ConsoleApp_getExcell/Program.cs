@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Automation;
 
 namespace ConsoleApp_getExcell
 {
@@ -16,21 +17,18 @@ namespace ConsoleApp_getExcell
         [DllImport("user32.dll", SetLastError = true)]
         static extern int SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
-        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
-        static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
-
         // 定義按鈕的訊息
         const int BM_CLICK = 0x00F5;
 
         static void Main(string[] args)
         {
-            Process process = new Process();
-            process.StartInfo.FileName = "C:\\Program Files\\DeskIn\\DeskIn.exe";
-            process.StartInfo.CreateNoWindow = false;
-            process.StartInfo.UseShellExecute = true;
-            process.Start();
-            process.WaitForInputIdle();
-            IntPtr mainWindowHandle = FindWindow(null, "DeskIn");
+            //Process process = new Process();
+            //process.StartInfo.FileName = "C:\\Program Files\\DeskIn\\DeskIn.exe";
+            //process.StartInfo.CreateNoWindow = false;
+            //process.StartInfo.UseShellExecute = true;
+            //process.Start();
+            //process.WaitForInputIdle();
+            IntPtr mainWindowHandle = FindWindow(null, "程式");
 
             if (mainWindowHandle == IntPtr.Zero)
             {
@@ -41,23 +39,24 @@ namespace ConsoleApp_getExcell
             {
                 Console.WriteLine("找到目標視窗。");
             }
-
-            IntPtr childHandle = IntPtr.Zero;
-            StringBuilder buttonText = new StringBuilder(256);
-            while ((childHandle = FindWindowEx(mainWindowHandle, childHandle, null, null)) != IntPtr.Zero)
+            AutomationElement mainWindow = AutomationElement.FromHandle(mainWindowHandle);
+            if (mainWindow == null)
             {
-                // 獲取子視窗的文字
-                GetWindowText(childHandle, buttonText, buttonText.Capacity);
-                Console.WriteLine($"{buttonText.ToString()}");
-                // 檢查文字是否符合按鈕的文字
-                if (buttonText.ToString() == "Button Text Here")
-                {
-                    Console.WriteLine("找到按鈕，句柄：" + childHandle);
-                    // 在這裡你可以對按鈕進行操作，例如模擬點擊
-                    break;
-                }
+                Console.WriteLine("找不到主視窗的 AutomationElement。");
+                return;
             }
-            //IntPtr buttonHandle = FindWindowEx(mainWindowHandle, IntPtr.Zero, null, "設備列表");
+
+            // 根據 AutomationId 查找按鈕
+            AutomationElement button = mainWindow.FindFirst(
+                TreeScope.Descendants,
+                new PropertyCondition(AutomationElement.AutomationIdProperty, "010000806E091400FCFFFFFF01000000"));
+
+            if (button == null)
+            {
+                Console.WriteLine("找不到指定 AutomationId 的按鈕。");
+                return;
+            }
+            //IntPtr buttonHandle = FindWindowEx(mainWindowHandle, IntPtr.Zero, null, "查詢資料");
 
             //if (buttonHandle == IntPtr.Zero)
             //{
@@ -67,6 +66,26 @@ namespace ConsoleApp_getExcell
             //else
             //{
             //    Console.WriteLine("找到按鈕。");
+            //}
+
+            //// 模擬按鈕點擊
+            //SendMessage(buttonHandle, BM_CLICK, IntPtr.Zero, IntPtr.Zero);
+            //Console.WriteLine("按鈕已點擊！");
+
+            //IntPtr childHandle = IntPtr.Zero;
+            //StringBuilder buttonText = new StringBuilder(256);
+            //while ((childHandle = FindWindowEx(mainWindowHandle, childHandle, null, null)) != IntPtr.Zero)
+            //{
+            //    // 獲取子視窗的文字
+            //    GetWindowText(childHandle, buttonText, buttonText.Capacity);
+            //    Console.WriteLine($"{buttonText.ToString()}");
+            //    // 檢查文字是否符合按鈕的文字
+            //    if (buttonText.ToString() == "Button Text Here")
+            //    {
+            //        Console.WriteLine("找到按鈕，句柄：" + childHandle);
+            //        // 在這裡你可以對按鈕進行操作，例如模擬點擊
+            //        break;
+            //    }
             //}
 
             //// 模擬按鈕點擊
