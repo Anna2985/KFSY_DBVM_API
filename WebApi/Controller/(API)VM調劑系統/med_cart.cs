@@ -11,6 +11,7 @@ using IBM.Data.DB2.Core;
 using System.Data;
 using System.Text;
 using System.IO;
+using MyOffice;
 
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -23,81 +24,7 @@ namespace DB2VM_API.Controller._API_VM調劑系統
     {
         static private string API01 = "http://127.0.0.1:4433";
         static string DB2_schema = $"{ConfigurationManager.AppSettings["DB2_schema"]}";
-
-        /// <summary>
-        ///以藥局和護理站取得占床資料
-        /// </summary>
-        /// <remarks>
-        /// 以下為JSON範例
-        /// <code>
-        ///     {
-        ///         "ValueAry":[藥局, 護理站]
-        ///     }
-        /// </code>
-        /// </remarks>
-        /// <param name="returnData">共用傳遞資料結構</param>
-        /// <returns></returns>
-        [HttpPost("get_bed_list_by_cart")]
-        public string get_bed_list_by_cart([FromBody] returnData returnData)
-        {
-            MyTimerBasic myTimerBasic = new MyTimerBasic();
-            try
-            {
-                if (returnData.ValueAry == null)
-                {
-                    returnData.Code = -200;
-                    returnData.Result = $"returnData.ValueAry 無傳入資料";
-                    return returnData.JsonSerializationt(true);
-                }
-                if (returnData.ValueAry.Count != 2)
-                {
-                    returnData.Code = -200;
-                    returnData.Result = $"returnData.ValueAry 內容應為[藥局, 護理站]";
-                    return returnData.JsonSerializationt(true);
-                }
-
-               
-                string 藥局 = returnData.ValueAry[0];
-                string 護理站 = returnData.ValueAry[1];
-                List<medCpoeClass> medCpoeClasses = ExcuteCSV(藥局, 護理站);
-                Dictionary<string, List<medCpoeClass>> medCpoeDict = CoverToDictByPatID(medCpoeClasses);
-                List<medCarInfoClass> medCarInfoClasses = new List<medCarInfoClass>();
-                List<medCpoeClass> medCpoe = new List<medCpoeClass>();
-                foreach(string 病歷號 in medCpoeDict.Keys)
-                {
-                    List<medCpoeClass> medCpoes = SortDictByPatID(medCpoeDict, 病歷號);
-                    medCarInfoClass medCarInfoClass = new medCarInfoClass
-                    {
-                        GUID = Guid.NewGuid().ToString(),
-                        藥局 = medCpoes[0].藥局,
-                        更新時間 = DateTime.Now.ToDateTimeString(),
-                        護理站 = medCpoes[0].護理站,
-                        床號 = medCpoes[0].床號,
-                        病歷號 = medCpoes[0].病歷號,
-                        姓名 = medCpoes[0].姓名,
-                        入院日期 = DateTime.MinValue.ToDateTimeString_6()
-                    };
-                    medCarInfoClasses.Add(medCarInfoClass);
-                    foreach(var item in medCpoes)
-                    {
-                        item.Master_GUID = medCarInfoClass.GUID;
-                    }
-                    medCpoe.AddRange(medCpoes);
-                }
-                List<medCarInfoClass> out_medCarInfoClass = medCarInfoClass.update_med_carinfo(API01, medCarInfoClasses);
-                List<medCpoeClass> out_medCpoe = medCpoeClass.update_med_cpoe(API01, medCpoe);
-                returnData.TimeTaken = $"{myTimerBasic}";
-                returnData.Data = medCpoe;
-                returnData.Result = $"取得住院{藥局} {護理站} 病床資訊共{out_medCarInfoClass.Count}筆";
-                return returnData.JsonSerializationt(true);
-            }
-            catch (Exception ex)
-            {
-                returnData.Code = -200;
-                returnData.Result = $"Exception:{ex.Message}";
-                return returnData.JsonSerializationt(true);
-            }
-        }
+        static string Message = "------------------------------";
         /// <summary>
         ///以GUID取得病人詳細資料
         /// </summary>
@@ -299,33 +226,33 @@ namespace DB2VM_API.Controller._API_VM調劑系統
                 }
                 string 藥局 = returnData.ValueAry[0];
                 string 護理站 = returnData.ValueAry[1];
-                List<medCpoeClass> medCpoeClasses = ExcuteCSV(藥局, 護理站);
-                Dictionary<string, List<medCpoeClass>> medCpoeDict = CoverToDictByPatID(medCpoeClasses);
-                List<medCarInfoClass> medCarInfoClasses = new List<medCarInfoClass>();
-                List<medCpoeClass> medCpoe = new List<medCpoeClass>();
-                foreach (string 病歷號 in medCpoeDict.Keys)
-                {
-                    List<medCpoeClass> medCpoes = SortDictByPatID(medCpoeDict, 病歷號);
-                    medCarInfoClass medCarInfoClass = new medCarInfoClass
-                    {
-                        GUID = Guid.NewGuid().ToString(),
-                        藥局 = medCpoes[0].藥局,
-                        更新時間 = DateTime.Now.ToDateTimeString(),
-                        護理站 = medCpoes[0].護理站,
-                        床號 = medCpoes[0].床號,
-                        病歷號 = medCpoes[0].病歷號,
-                        姓名 = medCpoes[0].姓名,
-                        入院日期 = DateTime.MinValue.ToDateTimeString_6()
-                    };
-                    medCarInfoClasses.Add(medCarInfoClass);
-                    foreach (var item in medCpoes)
-                    {
-                        item.Master_GUID = medCarInfoClass.GUID;
-                    }
-                    medCpoe.AddRange(medCpoes);
-                }
-                List<medCarInfoClass> out_medCarInfoClass = medCarInfoClass.update_med_carinfo(API01, medCarInfoClasses);
-                List<medCpoeClass> out_medCpoe = medCpoeClass.update_med_cpoe(API01, medCpoe);
+                //List<medCpoeClass> medCpoeClasses = ExcuteCSV(藥局, 護理站);
+                //Dictionary<string, List<medCpoeClass>> medCpoeDict = CoverToDictByPatID(medCpoeClasses);
+                //List<medCarInfoClass> medCarInfoClasses = new List<medCarInfoClass>();
+                //List<medCpoeClass> medCpoe = new List<medCpoeClass>();
+                //foreach (string 病歷號 in medCpoeDict.Keys)
+                //{
+                //    List<medCpoeClass> medCpoes = SortDictByPatID(medCpoeDict, 病歷號);
+                //    medCarInfoClass medCarInfoClass = new medCarInfoClass
+                //    {
+                //        GUID = Guid.NewGuid().ToString(),
+                //        藥局 = medCpoes[0].藥局,
+                //        更新時間 = DateTime.Now.ToDateTimeString(),
+                //        護理站 = medCpoes[0].護理站,
+                //        床號 = medCpoes[0].床號,
+                //        病歷號 = medCpoes[0].病歷號,
+                //        姓名 = medCpoes[0].姓名,
+                //        入院日期 = DateTime.MinValue.ToDateTimeString_6()
+                //    };
+                //    medCarInfoClasses.Add(medCarInfoClass);
+                //    foreach (var item in medCpoes)
+                //    {
+                //        item.Master_GUID = medCarInfoClass.GUID;
+                //    }
+                //    medCpoe.AddRange(medCpoes);
+                //}
+                //List<medCarInfoClass> out_medCarInfoClass = medCarInfoClass.update_med_carinfo(API01, medCarInfoClasses);
+                //List<medCpoeClass> out_medCpoe = medCpoeClass.update_med_cpoe(API01, medCpoe);
 
                 HIS_DB_Lib.returnData returnData_handover = medCpoeClass.handover(API01, returnData.ValueAry);
 
@@ -373,13 +300,85 @@ namespace DB2VM_API.Controller._API_VM調劑系統
                 return returnData.JsonSerializationt(true);
             }
         }
-    
-        private List<medCpoeClass> ExcuteCSV(string phar,string hnursta)
+        [HttpGet("get_all")]
+        public string get_all()
         {
+            returnData returnData = new returnData();
+            MyTimerBasic myTimerBasic = new MyTimerBasic();
+            try
+            {
+                List<medCpoeClass> medCpoeClasses = ExcuteCSV();
+                Dictionary<string, List<medCpoeClass>> dicMedCpoe_cart= ToDictByCart(medCpoeClasses);
+                List<medCpoeClass> update_medCpoeClass = new List<medCpoeClass>();
+                string 護理站 = "";
+                int 病床清單 = 0;
+                foreach( string cart in dicMedCpoe_cart.Keys)
+                {
+                    List<medCpoeClass> medCpoes = GetDictByCart(dicMedCpoe_cart, cart);
+                    Dictionary<string, List<medCpoeClass>> medCpoeDict = ToDictByPatID(medCpoes);
+                    List<medCpoeClass> add_medCpoeClass = new List<medCpoeClass>();
+                    foreach (string 病歷號 in medCpoeDict.Keys)
+                    {
+                        List<medCpoeClass> medCpoe = GetDictByPatID(medCpoeDict, 病歷號);
+                        medCarInfoClass medCarInfoClass = new medCarInfoClass
+                        {
+                            GUID = Guid.NewGuid().ToString(),
+                            藥局 = medCpoe[0].藥局,
+                            更新時間 = DateTime.Now.ToDateTimeString(),
+                            護理站 = medCpoe[0].護理站,
+                            床號 = medCpoe[0].床號,
+                            病歷號 = medCpoe[0].病歷號,
+                            姓名 = medCpoe[0].姓名,
+                            入院日期 = DateTime.MinValue.ToDateTimeString_6()
+                        };
+                        List<medCarInfoClass> medCarInfoClasses = new List<medCarInfoClass>();
+                        medCarInfoClasses.Add(medCarInfoClass);
+                        List<medCarInfoClass> out_medCarInfoClass = medCarInfoClass.update_med_carinfo(API01, medCarInfoClasses);
+                        List<medCarInfoClass> buf_medCarInfo = out_medCarInfoClass.Where(temp => temp.病歷號 == 病歷號).ToList();
+                        foreach (var item in medCpoe)
+                        {
+                            item.Master_GUID = buf_medCarInfo[0].GUID;
+                        }
+                        add_medCpoeClass.AddRange(medCpoe);
+
+                    }
+                    List<medCpoeClass> out_medCpoe = medCpoeClass.update_med_cpoe(API01, add_medCpoeClass);
+                    returnData.TimeTaken = $"{myTimerBasic}";
+                    //returnData.Result = $"取得 {護理站} 病床資訊共{medCarInfoClasses.Count}筆";
+                    returnData.Data = add_medCpoeClass;
+                    Logger.Log("get_all", returnData.JsonSerializationt());
+                    Logger.Log("get_all", Message);
+                }
+                
+                returnData.Code = 200;
+                returnData.TimeTaken = $"{myTimerBasic}";
+                returnData.Result = $"取得病床資訊共{病床清單}筆";
+                return returnData.JsonSerializationt(true);
+            }
+            catch (Exception ex)
+            {
+                returnData.Code = -200;
+                returnData.Result = $"Exception:{ex.Message}";
+                return returnData.JsonSerializationt(true);
+            }
+        }
+
+        private List<medCpoeClass> ExcuteCSV()
+        {
+            string folderPath = @"Z:\";
+            string searchPattern = "*.csv";
+            string NewFile = null;
+            List<string> todayFiles = new List<string>();
+
+            string[] files = Directory.GetFiles(folderPath, searchPattern, SearchOption.AllDirectories);
+            if (files.Length > 0)
+            {
+                NewFile = files.OrderBy(f => Path.GetFileName(f)).Last();
+            }
+            string filePath = Path.Combine(folderPath, NewFile);
+
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            string filePath = @"C:\Users\Administrator\Desktop\快速配藥單_202411011533.csv";
-            List<medCarInfoClass> medCarInfoClasses = new List<medCarInfoClass>();
-            List<medCpoeClass> medCpoeClasses = new List<medCpoeClass>();
+            List<object[]> list_UD = new List<object[]>();
             using (StreamReader sr = new StreamReader(filePath, Encoding.GetEncoding("Big5")))
             {
                 sr.ReadLine();
@@ -387,35 +386,43 @@ namespace DB2VM_API.Controller._API_VM調劑系統
                 {
                     string row = sr.ReadLine();
                     string[] values = row.Split(",");
-                    for(int i = 0; i < values.Length; i++)
+                    for (int i = 0; i < values.Length; i++)
                     {
                         values[i] = values[i].Trim('"');
                     }
-                    if (values[0] != hnursta) continue;
-       
-                    medCpoeClass medCpoeClass = new medCpoeClass
-                    {
-                        GUID = Guid.NewGuid().ToString(),                 
-                        藥局 = phar,
-                        護理站 = values[0],
-                        床號 = values[1],
-                        病歷號 = $"{values[0]}-{values[1]}-{values[2]}",
-                        姓名 = values[2],
-                        更新時間 = DateTime.Now.ToDateTimeString(),
-                        序號 = $"{values[4]}-{values[5]}-{values[8]}",
-                        開始時間 = DateTime.MinValue.ToDateTimeString_6(),
-                        結束時間 = DateTime.MinValue.ToDateTimeString_6(),
-                        頻次代碼 = values[6],
-                        藥品名 = values[4],
-                        途徑 = values[5],
-                        數量 = values[8],
-                        單位 = values[9],
-   
-                    };
-                    medCpoeClasses.Add(medCpoeClass);
+                    list_UD.Add(values);
                 }
-                return  medCpoeClasses;
-            }            
+            }
+
+            List<medCpoeClass> medCpoeClasses = new List<medCpoeClass>();
+            for(int i = 0; i < list_UD.Count(); i++)
+            {
+                string 護理站 = list_UD[i][(int)enum_UDCSV.站].ObjectToString();
+                medCpoeClass medCpoeClass = new medCpoeClass
+                {
+                    GUID = Guid.NewGuid().ToString(),
+                    藥局 = "住院藥局",
+                    護理站 = list_UD[i][(int)enum_UDCSV.站].ObjectToString(),
+                    床號 = list_UD[i][(int)enum_UDCSV.床號].ObjectToString(),
+                    //病歷號 = $"{護理站}-{床號}-{姓名}",
+                    姓名 = list_UD[i][(int)enum_UDCSV.姓名].ObjectToString(),
+                    更新時間 = DateTime.Now.ToDateTimeString(),
+                    //序號 = $"{藥品名}-{途徑}-{數量}",
+                    開始時間 = DateTime.MinValue.ToDateTimeString_6(),
+                    結束時間 = DateTime.MinValue.ToDateTimeString_6(),
+                    頻次代碼 = list_UD[i][(int)enum_UDCSV.服法].ObjectToString(),
+                    藥品名 = list_UD[i][(int)enum_UDCSV.藥名].ObjectToString(),
+                    途徑 = list_UD[i][(int)enum_UDCSV.途徑].ObjectToString(),
+                    數量 = list_UD[i][(int)enum_UDCSV.每日量].ObjectToString(),
+                    單位 = list_UD[i][(int)enum_UDCSV.單位].ObjectToString(),
+
+                };
+                medCpoeClass.病歷號 = $"{medCpoeClass.護理站}-{medCpoeClass.床號}-{medCpoeClass.姓名}";
+                medCpoeClass.序號 = $"{medCpoeClass.藥品名}-{medCpoeClass.途徑}-{medCpoeClass.數量}";
+                medCpoeClasses.Add(medCpoeClass);
+            }
+            return medCpoeClasses;
+
         }
 
         private string age(string birthday)
@@ -520,7 +527,35 @@ namespace DB2VM_API.Controller._API_VM調劑系統
 
             return output.ToString();
         }
-        private Dictionary<string, List<medCpoeClass>> CoverToDictByPatID(List<medCpoeClass> medCpoeClasses)
+        private Dictionary<string, List<medCpoeClass>> ToDictByCart(List<medCpoeClass> medCpoeClasses)
+        {
+            Dictionary<string, List<medCpoeClass>> dictionary = new Dictionary<string, List<medCpoeClass>>();
+            foreach (var item in medCpoeClasses)
+            {
+                if (dictionary.TryGetValue(item.護理站, out List<medCpoeClass> list))
+                {
+                    list.Add(item);
+                }
+                else
+                {
+                    dictionary[item.護理站] = new List<medCpoeClass> { item };
+                }
+            }
+            return dictionary;
+        }
+        private List<medCpoeClass> GetDictByCart(Dictionary<string, List<medCpoeClass>> dict, string 護理站)
+        {
+            if (dict.TryGetValue(護理站, out List<medCpoeClass> medCpoeClasses))
+            {
+                return medCpoeClasses;
+            }
+            else
+            {
+                return new List<medCpoeClass>();
+            }
+        }
+
+        private Dictionary<string, List<medCpoeClass>> ToDictByPatID(List<medCpoeClass> medCpoeClasses)
         {
             Dictionary<string, List<medCpoeClass>> dictionary = new Dictionary<string, List<medCpoeClass>>();
             foreach(var item in medCpoeClasses)
@@ -536,7 +571,7 @@ namespace DB2VM_API.Controller._API_VM調劑系統
             }
             return dictionary;
         }
-        private List<medCpoeClass> SortDictByPatID(Dictionary<string, List<medCpoeClass>> dict, string 病歷號)
+        private List<medCpoeClass> GetDictByPatID(Dictionary<string, List<medCpoeClass>> dict, string 病歷號)
         {
             if(dict.TryGetValue(病歷號, out List<medCpoeClass> medCpoeClasses))
             {
@@ -546,6 +581,27 @@ namespace DB2VM_API.Controller._API_VM調劑系統
             {
                 return new List<medCpoeClass>();
             }
+        }
+        public enum enum_UDCSV
+        {
+            站,
+            床號,
+            姓名,
+            囑型,
+            藥名,
+            途徑,
+            服法,
+            每次量,
+            每日量,
+            單位,
+            備註,
+            儲位,
+            TSTR,
+            NOW_DOC_NO1,
+            RANK,
+            ANESTAETICE,
+            INT_DAYS,
+            INT_TIMES
         }
 
     }
