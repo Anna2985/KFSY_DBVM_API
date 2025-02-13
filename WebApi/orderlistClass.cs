@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Text.Json.Serialization;
 using HIS_DB_Lib;
 using Basic;
-using Newtonsoft.Json;
+//using Newtonsoft.Json;
 
 namespace DB2VM_API
 {

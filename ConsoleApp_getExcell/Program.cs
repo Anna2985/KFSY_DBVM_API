@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Automation;
+using Basic;
 
 namespace ConsoleApp_getExcell
 {

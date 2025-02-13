@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -6,6 +6,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Reference Include="Basic">
+      <HintPath>..\get_UCData\0.dll\Basic.dll</HintPath>
+    </Reference>
     <Reference Include="UIAutomationClient">
       <HintPath>..\0.DLL\UIAutomationClient.dll</HintPath>
     </Reference>
