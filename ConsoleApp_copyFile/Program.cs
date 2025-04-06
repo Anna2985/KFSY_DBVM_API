@@ -53,6 +53,8 @@ namespace ConsoleApp_copyFile
                         }
                     }
                     string destinationFilePath = Path.Combine(desktopPath, Path.GetFileName(NewFile));
+                    string path = @"C:\UD";
+                    destinationFilePath = Path.Combine(path, Path.GetFileName(NewFile));
                     // 複製檔案到桌面
                     File.Copy(NewFile, destinationFilePath, overwrite: true);
                     Console.WriteLine($"檔案已成功複製到桌面: {destinationFilePath}");

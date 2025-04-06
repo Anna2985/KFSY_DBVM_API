@@ -70,4 +70,8 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controller\%28API%29藥檔取得\" />
+  </ItemGroup>
+
 </Project>
